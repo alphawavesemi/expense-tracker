@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Expense Tracker</title>
   <style>
     body {
@@ -47,6 +47,14 @@
     .clear-btn {
       background-color: #dc3545;
     }
+    .delete-btn {
+      background-color: #ff4d4d;
+      border: none;
+      padding: 5px 10px;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -86,6 +94,7 @@
       <tr>
         <th>Item</th>
         <th>Amount (₹)</th>
+        <th>Action</th>
       </tr>
     </table>
 
@@ -97,13 +106,21 @@
 
     function renderTable() {
       const table = document.getElementById("expenseTable");
-      table.innerHTML = "<tr><th>Item</th><th>Amount (₹)</th></tr>";
+      table.innerHTML = "<tr><th>Item</th><th>Amount (₹)</th><th>Action</th></tr>";
       let total = 0;
 
-      expenses.forEach(e => {
+      expenses.forEach((e, i) => {
         const row = table.insertRow();
         row.insertCell(0).innerText = e.item;
         row.insertCell(1).innerText = e.amount.toFixed(2);
+
+        const deleteCell = row.insertCell(2);
+        const btn = document.createElement("button");
+        btn.innerText = "🗑️ Delete";
+        btn.className = "delete-btn";
+        btn.onclick = () => deleteExpense(i);
+        deleteCell.appendChild(btn);
+
         total += e.amount;
       });
 
@@ -124,6 +141,14 @@
       renderTable();
       document.getElementById("item").value = '';
       document.getElementById("amount").value = '';
+    }
+
+    function deleteExpense(index) {
+      if (confirm("Delete this expense?")) {
+        expenses.splice(index, 1);
+        localStorage.setItem("expenses", JSON.stringify(expenses));
+        renderTable();
+      }
     }
 
     function clearExpenses() {
